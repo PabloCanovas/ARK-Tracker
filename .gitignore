@@ -1,2 +1,4 @@
 *.csv
 Daily_reports/*.csv
+*.Rproj
+.gitattributes
