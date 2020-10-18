@@ -1,0 +1,124 @@
+
+
+
+
+function(input, output) {
+  
+  getMyPlots <- eventReactive(input$Request,{
+    
+    withProgress(message = 'Making plots...', value = 0, {
+      
+      plotList <- list()
+      
+      beginDate <- paste0(input$beginDate %>% format("%Y%m%d"), "000000")
+      endDate <- paste0(input$endDate %>% format("%Y%m%d"), "000000")
+      
+      progressNumber <- length(input$entities)*length(input$dataVars)
+      
+      for(entity in input$entities){
+        error <- FALSE
+        for(var in input$dataVars){
+          
+          tryCatch({
+            
+            origins <- map(resolutions,
+                           ~GetOriginsByEntityResolutionAndDatavariable(entityId = entity,
+                                                                        dataVar = var,
+                                                                        resolution = .x,
+                                                                        originType = input$originType)) %>%
+              set_names(resolutions) %>%
+              discard(is.null) %>% 
+              discard(~length(.x) == 0) %>% 
+              map2_dfr(.y = names(.), function(x, Resolution) add_column(.data = x, Resolution))  %>% 
+              arrange(desc(Main)) %>%
+              select(Id, Resolution)
+            
+            if(nrow(origins) == 0)
+              next
+            
+            allOriginDataByVar <-  input$originType %>% switch(
+              "M"={
+                map2(origins$Id, 
+                     origins$Resolution,
+                     ~GetMeters(entityId = entity,
+                                entityType = "Market",
+                                dataVar = var,
+                                resolution = .y,
+                                origin = .x,
+                                beginUtcDateTime = beginDate,
+                                endUtcDateTime = endDate)) %>%
+                  set_names(origins$Id) %>%
+                  discard(is.null) %>%
+                  discard(~length(.x) == 0) %>%
+                  map2_dfr(.y = names(.), function(x, origin) add_column(.data = x, origin))
+                
+              },
+              "F"={
+                map2(origins$Id, 
+                     origins$Resolution,
+                     ~GetForecast(predictableId  = entity, 
+                                  predictableType = "Market", 
+                                  api = "Datalyze",
+                                  dataVar = var,
+                                  resolution = .y,
+                                  algorithm = .x,
+                                  beginUtcDateTime = beginDate,
+                                  endUtcDateTime = endDate)) %>%
+                  # discard(~length(.x) == 0) %>%
+                  map_if(.p = function(x) !is.null(x), function(x) x %>% 
+                           mutate(utcDateTime = ymd_hms(UtcDateTime)) %>%
+                           select(utcDateTime, Value) %>% 
+                           arrange(utcDateTime)
+                  ) %>% 
+                  set_names(origins$Id) %>%
+                  discard(is.null) %>%
+                  discard(~length(.x) == 0) %>%
+                  map2_dfr(.y = names(.), function(x, origin) add_column(.data = x, origin))
+              })
+            
+            
+            entityVar <- paste(entity, var, sep = " - ")
+            
+            if(nrow(allOriginDataByVar) == 0)
+              next
+            
+            plotList %<>%  append(list(ggplot(allOriginDataByVar, aes(x = utcDateTime, y = Value, col = origin)) +
+                                         geom_point(na.rm = T) +
+                                         geom_line(na.rm = T) +
+                                         labs(title = entityVar)
+            ))
+            
+            
+            
+            incProgress(1/progressNumber)
+            
+            
+          },error=function(e){
+            error <<- TRUE
+          })
+          
+          if(error) next
+          
+        }
+      }
+      
+      if(length(plotList) != 0){
+        do.call(grid.arrange, c(plotList, ncol=1))
+      } else {
+        stop("There are no data for origins: ", paste0(origins, collapse = " & "))
+      }
+      
+    })
+  })
+  
+  output$plot <- renderPlot({
+    getMyPlots() 
+  }
+  ,height = reactive(750*sqrt(length(input$entities))*sqrt(length(input$dataVars)))
+  )
+  
+  
+  
+  
+  
+}

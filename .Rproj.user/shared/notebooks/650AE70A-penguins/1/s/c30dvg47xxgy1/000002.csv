@@ -1,0 +1,4 @@
+"0","cul_length <- paste0(round(mean(penguins$bill_length_mm, "
+"0","                                na.rm = TRUE)), "" mm"")"
+"0","valueBox(cul_length, "
+"0","         icon = ""fa-ruler"", color = ""#fa7404"")"

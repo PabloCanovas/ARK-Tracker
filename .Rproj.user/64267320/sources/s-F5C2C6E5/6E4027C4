@@ -1,0 +1,25 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1603038567861.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "6E4027C4",
+    "lastKnownWriteTime" : 1603041570,
+    "last_content_update" : 1603041570498,
+    "path" : "~/RWork/Investing/ARK/app.R",
+    "project_path" : "app.R",
+    "properties" : {
+        "cursorPosition" : "17,0",
+        "scrollLine" : "0"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

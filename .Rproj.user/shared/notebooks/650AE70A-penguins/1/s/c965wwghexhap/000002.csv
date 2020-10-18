@@ -1,0 +1,4 @@
+"0","DT::datatable(penguins, options = list("
+"0","  pageLength = 25, "
+"0","  height = ""600px"""
+"0","))"

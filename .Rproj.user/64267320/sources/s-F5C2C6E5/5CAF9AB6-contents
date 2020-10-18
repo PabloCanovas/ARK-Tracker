@@ -1,0 +1,938 @@
+source("functions/LoadRequiredPackages.R")
+source("functions/multiplot.R")
+source("functions/WindRose.R")
+
+packageList <- c("shinydashboard", "lubridate", "magrittr" ,"shiny","ggplot2","MASS","plotly",
+                 "shinythemes","shinyLP","RJSONIO","markdown","quantmod","tidyverse","scales", "shinyWidgets", "leaflet")
+LoadRequiredPackages(packageList)
+
+monthStart <- function(x) {
+  x <- as.POSIXlt(x)
+  x$mday <- 1
+  as.Date(x)
+}
+meses <- c("Enero", "Febrero","marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre")
+
+ui <- 
+  
+  
+  dashboardPage( 
+    skin = "blue",
+    dashboardHeader(title = "ESTUDIO ITALIA",
+                    # Menu de mensajes.
+                    dropdownMenu(type = "messages", badgeStatus = "primary",
+                                 messageItem("Carlos Vecina",
+                                             "Welcome to my shiny app!",
+                                             time = "Now"
+                                 ),
+                                 messageItem("Carlos Vecina",
+                                             "Any questions, contact me:",
+                                             time = "Now"
+                                 ),
+                                 messageItem("Carlos Vecina",
+                                             "carlos.vecina@cunef.edu",
+                                             time = "Now"
+                                 )
+                    )),
+    dashboardSidebar(bootstrapPage(
+      # Creo el menu
+      sidebarMenu(   
+        tags$div(
+          # h6( HTML("| GNARUM - GRUPO GNERA")),
+          htmlOutput("marquesina")
+        ),
+        menuItem("1. Estudio del Precio Menos", tabName="i1", icon = icon("euro")),
+        menuItem("2. Estudio del Volumen", tabName="i2", icon = icon("vimeo")),
+        menuItem("3. Graficador una variable", tabName="i3", icon = icon("cog")),
+        menuItem("4. Graficador de correlaciones", tabName="i4", icon = icon("cogs")),#,badgeLabel = "soon", badgeColor = "blue")
+        menuItem("5. Desvios de  Meteologica", tabName="i5", icon = icon("medium")),
+        menuItem("6.. Modelo de vientos", tabName="i6", icon = icon("adjust"))
+        #menuItem("3. Buy signals", tabName="i4", icon = icon("eur")),
+        # menuItem("4. Prediction", tabName="i4", icon = icon("eercast"),badgeLabel = "soon", badgeColor = "blue")
+        
+        
+      )
+      
+    )),
+    dashboardBody(      tags$head(tags$link(rel = "icon", href = "favicon.ico")),
+                        fluidPage(
+                          HTML("<style>p.indent{ padding-left: 1.8em }</style>"),   # We create a class p.indent to indent some texts and buttons.
+                          tabItems(
+                            
+                            # 1. PRECIOS Y SPREADS EXTREMOS
+                            tabItem( tabName = "i1",
+                                     column(12, h1(HTML("Distribucion de PRECIOS MENOS o SPREAD extremos por hora")),
+                                            h2(HTML("&nbsp;"))),
+                                     column(3,
+                                            sliderTextInput(    inputId = "slider0",
+                                                                label = "Selecciona el periodo",
+                                                                choices = seq.Date(as.Date("2017-10-01"),as.Date("2018-10-10"),"month"),grid = T,
+                                                                
+                                                                selected = c(first(seq.Date(as.Date("2018-01-01"),as.Date("2018-10-10"),"month")),
+                                                                             last(seq.Date(as.Date("2017-10-01"),as.Date("2018-10-10"),"month")))),
+                                            selectInput("variablePanel1", label = h3("Precio menos  o  Spread"), 
+                                                        choices = list("Precio Menos" = "PrecioMenos", "Spread" = "Spread"), 
+                                                        selected = 1),
+                                            numericInput("extremePrice", label = h3("A partir de que precio es extremo"), value = 400),
+                                            actionButton('plotButton1','Plot',icon('area-chart')),
+                                            tags$style("#plotButton1 { vertical-align: center; height: 50px; width: 80%; font-size: 15px;}")
+                                     ),
+                                     column(9,
+                                            plotOutput("preciosExtrem")
+                                     )
+                            ),
+                            
+                            # 2. ESTUDIO DEL VOLUMEN POR DIAS Y HORAS
+                            tabItem( tabName = "i2",
+                                     # Select plots
+                                     column(2,
+                                            h3(HTML("&nbsp;")),
+                                            # sliderInput("slider1", "Selecciona el periodo", min = as.Date("2017-10-01"),
+                                            #             max =as.Date("2018-10-01"),value=c(as.Date("2017-10-01"),as.Date("2018-10-01")),timeFormat="%b %Y",animate = animationOptions(interval = 0.1, loop = F,pauseButton = T)),
+                                            sliderTextInput(    inputId = "slider1",
+                                                                label = "Selecciona el periodo",
+                                                                choices = seq.Date(as.Date("2017-10-01"),as.Date("2018-10-10"),"month"),grid = T,
+                                                                
+                                                                selected = c(first(seq.Date(as.Date("2018-05-01"),as.Date("2018-10-10"),"month")),
+                                                                             last(seq.Date(as.Date("2017-10-01"),as.Date("2018-10-10"),"month"))))
+                                     ),
+                                     column(2,
+                                            h1(HTML("&nbsp;")),
+                                            actionButton('plotButton2','Plot',icon('area-chart')),
+                                            tags$style("#plotButton2 { vertical-align: center; margin-left: 50px; height: 50px; width: 50%;display:inline-block; font-size: 15px;}")
+                                     ),
+                                     
+                                     column(8,
+                                            h1(HTML("Media del Volumen por Dia y Hora")),
+                                            h2(HTML("&nbsp;")),
+                                            htmlOutput("tituloViendoDesde1")),
+                                     column(12,
+                                            
+                                            plotOutput('volumenDiaHora'), 
+                                            h4(HTML("&nbsp;"))
+                                            
+                                     ),
+                                     column(6,
+                                            plotOutput('volumenHora1')
+                                     ),
+                                     column(6,
+                                            plotOutput('volumenHora2')
+                                     ),
+                                     column(12,
+                                            h5(HTML("&nbsp;"))),
+                                     column(4,
+                                            h2(HTML("&nbsp;"))),
+                                     column(8,
+                                            h1(HTML("Recuento de Signos Negativos"))),
+                                     column(6,
+                                            plotOutput('volumenHoraFreq1')
+                                     ),
+                                     column(6,
+                                            plotOutput('volumenHoraFreq2')
+                                     ),
+                                     column(3,
+                                            h2(HTML("&nbsp;")))
+                                     
+                                     # box(
+                                     #     title = "Inputs", status = "warning", solidHeader = TRUE,
+                                     #     "Box content here", br(), "More box content",
+                                     #     sliderInput("slider", "Slider input:", 1, 100, 50),
+                                     #     textInput("text", "Text input:")
+                                     # )
+                                     
+                                     
+                                     
+                            ),
+                            
+                            ############### 3. GRAFICADOR DE UNA VARIABLE
+                            tabItem( tabName = "i3",
+                                     column(4,
+                                            h2(HTML("&nbsp;"))
+                                     ),
+                                     column(8,
+                                            h1(HTML("Grafico de una variable"))),
+                                     column(4,
+                                            # h3(HTML("&nbsp;")),
+                                            sliderInput("slider3", "Selecciona el periodo", min = as.Date("2017-10-01"),
+                                                        max =as.Date("2018-10-01"),value=c(as.Date("2018-01-01"),as.Date("2018-10-01")),
+                                                        timeFormat="%b %Y"),
+                                            conditionalPanel(
+                                              condition = "input.tipoGrafico3=='Histograma'",
+                                              sliderInput("sliderBins", "Selecciona divisiones", min = 1,
+                                                          max = 100,step = 4,value = 50)
+                                            )
+                                     ),
+                                     column(8,
+                                            h5(HTML("&nbsp;")),
+                                            htmlOutput("tituloViendoDesde3")
+                                     ),
+                                     column(12,h2(HTML("&nbsp;"))),
+                                     column(2,
+                                            selectizeInput(inputId = "VariableX3", label = h3("Variable a estudiar X"), choices = NULL,
+                                                           options = list(placeholder = "Selecciona una variable"))
+                                     ),
+                                     conditionalPanel(
+                                       condition = "input.tipoGrafico3!='Temporal'",
+                                       column(2,
+                                              selectizeInput(inputId = "VariableColor3", label = h3("Color"), 
+                                                             choices = list("Ninguna" = "Ninguna", "Signo Desvio" = "SignoFct" , "Dia" = "Dia", "TipoDia" = "TipoDia",
+                                                                            "TipoHora" = "TipoHora"), 
+                                                             selected = 1)
+                                       )
+                                     ),
+                                     conditionalPanel(
+                                       condition = "input.tipoGrafico3=='Temporal'",
+                                       column(2,
+                                              selectizeInput(inputId = "VariableY3", label = h3("Variable a estudiar Y"), choices = NULL,
+                                                             options = list(placeholder = "Selecciona una variable"))
+                                       )
+                                     ),
+                                     conditionalPanel(
+                                       condition = "input.tipoGrafico3!='Temporal'",
+                                       column(2,
+                                              selectInput("VariableDivisora3", label = h3("Division"), 
+                                                          choices = list("Ninguna" = "Ninguna", "Signo Desvio" = "SignoFct" ,"Dia" = "Dia", "TipoDia"="TipoDia",
+                                                                         "TipoHora" = "TipoHora"), 
+                                                          selected = 1)
+                                       )
+                                     ),
+                                     column(2,
+                                            radioButtons("tipoGrafico3", label = h3("Tipo"),
+                                                         choices = list("Densidad" = "Densidad", "Histograma" = "Histograma", "Evolucion temporal" = "Temporal"), 
+                                                         selected = "Temporal")),
+                                     conditionalPanel(
+                                       condition = "input.tipoGrafico3=='Temporal'",
+                                       column(2,
+                                              selectInput("agrupacionTemporal3", label = h3("Resolucion"), 
+                                                          choices = list("Horaria" = "Horaria", "Diaria" = "Diaria" ,"Mensual" = "Mensual", "Q" = "Quarter"), 
+                                                          selected = "Diaria")
+                                       )
+                                     ),
+                                     column(2,
+                                            h2(HTML("&nbsp;")),
+                                            actionButton('plotButton3','Plot',icon('area-chart')),
+                                            tags$style(HTML('.action-button {  
+                                        background-color: white; 
+                                        color: black; 
+                                        border: 2px solid #3c8dbc;
+                                        }
+                                        
+                                        .action-button:hover {
+                                        background-color: #3c8dbc;
+                                        color: white;
+                                        border: 2px solid #3c8dbc;
+                                        }'))
+                                     ),
+                                     column(12,h2(HTML("&nbsp;"))),
+                                     column(12,
+                                            # 
+                                            # h2(HTML("&nbsp;")),
+                                            plotOutput('graficoDensidad')
+                                            
+                                     )
+                                     
+                            ),
+                            
+                            ############## 4. GRAFICADOR DE CORRELACIONES
+                            tabItem( tabName = "i4",
+                                     
+                                     column(4,
+                                            h2(HTML("&nbsp;"))
+                                     ),
+                                     column(8,
+                                            h1(HTML("Grafico de dispersion para ver correlaciones"))),
+                                     column(4,
+                                            # h3(HTML("&nbsp;")),
+                                            sliderInput("slider2", "Selecciona el periodo", min = as.Date("2017-10-01"),
+                                                        max =as.Date("2018-10-01"),value=c(as.Date("2018-05-01"),as.Date("2018-10-01")),
+                                                        timeFormat="%b %Y")
+                                     ),
+                                     column(8,
+                                            h5(HTML("&nbsp;")),
+                                            htmlOutput("tituloViendoDesde2")
+                                     ),
+                                     column(12,h2(HTML("&nbsp;"))),
+                                     column(2,
+                                            selectizeInput(inputId = "VariableX", label = h3("Variable para el eje X"), choices = NULL,
+                                                           options = list(placeholder = "Selecciona una variable"))
+                                     ),
+                                     column(2,
+                                            
+                                            selectizeInput(inputId = "VariableY", label = h3("Variable para el eje Y"), choices = NULL,
+                                                           options = list(placeholder = "Selecciona una variable"))
+                                            
+                                     ),
+                                     
+                                     column(2,
+                                            selectizeInput(inputId = "VariableColor", label = h3("Color"), 
+                                                           choices = list("Ninguna" = "Ninguna", "Signo Desvio" = "SignoFct" , "Dia" = "Dia", "TipoDia" = "TipoDia",
+                                                                          "TipoHora" = "TipoHora"), 
+                                                           selected = "SignoFct")
+                                     ),
+                                     
+                                     column(2,
+                                            selectInput("VariableDivisora", label = h3("Division"), 
+                                                        choices = list("Ninguna" = "Ninguna", "Signo Desvio" = "SignoFct" ,"Dia" = "Dia", "TipoDia" = "TipoDia",
+                                                                       "TipoHora" = "TipoHora"), 
+                                                        selected = "Ninguna")
+                                     ),
+                                     column(2,
+                                            h2(HTML("&nbsp;")),
+                                            actionButton('plotButton','Plot',icon('area-chart')),
+                                            tags$style(HTML('.action-button {  
+                                       background-color: white; 
+                        color: black; 
+                        border: 2px solid #3c8dbc;
+                        }
+                        
+                        .action-button:hover {
+                        background-color: #3c8dbc;
+                        color: white;
+                        border: 2px solid #3c8dbc;
+                        }'))
+                                     ),
+                                     column(12,
+                                            plotOutput('scatterPlot')
+                                            
+                                     )
+                                     # column(3,
+                                     # 
+                                     # ),
+                                     
+                                     # column(12,
+                                     #        
+                                     #        h2(HTML("&nbsp;"))
+                                     #        
+                                     # ),
+                                     # column(9,
+                                     #        
+                                     #        
+                                     #        
+                                     # )
+                                     
+                                     
+                                     
+                            ),
+                            
+                            tabItem( tabName = "i5",
+                                     
+                                     column(2,
+                                            h3(HTML("&nbsp;")),
+                                            sliderTextInput(    inputId = "slider5",
+                                                                label = "Selecciona el periodo",
+                                                                choices = seq.Date(as.Date("2018-01-01"),as.Date("2018-10-10"),"month"),grid = T,
+                                                                selected = c(first(seq.Date(as.Date("2018-01-01"),as.Date("2018-10-10"),"month")),
+                                                                             last(seq.Date(as.Date("2017-10-01"),as.Date("2018-10-10"),"month"))))
+
+                                     ),
+                                     column(2,
+                                            h1(HTML("&nbsp;")),
+                                            actionButton('plotButton5','Plot',icon('area-chart')),
+                                            tags$style("#plotButton5 { vertical-align: center; margin-left: 50px; height: 50px; width: 50%;display:inline-block; font-size: 15px;}")
+                                     ),
+                                     
+                                     column(8,
+                                            h1(HTML("Desvios del forecast de Meteologica")),
+                                            h2(HTML("&nbsp;")),
+                                            htmlOutput("tituloViendoDesde5")),
+                                     column(12,
+                                            radioButtons("planta5", label = h3("Planta"),
+                                                         choices = list("ASCOL01" = "ASCOL01", "CONTE01" = "CONTE01", "EUROW01" = "EUROW01",
+                                                                        "LACED01" = "LACED01"), 
+                                                         selected = "ASCOL01", inline = T)),
+                                     column(12,
+                                            plotOutput("boxPlotDesvios"))
+                                     
+                                     
+                                     
+                            ),
+                            tabItem( tabName = "i6",
+                                     column(2,
+                                            h3(HTML("&nbsp;"))
+
+                                            
+                                     ),
+                                     column(2,
+                                            h1(HTML("&nbsp;"))
+
+                                     ),
+                                     
+                                     column(8,
+                                            h1(HTML("Desvios del forecast de Meteologica")),
+                                            h2(HTML("&nbsp;"))),
+                                     column(6,
+                                            leafletOutput("mapaPlantas")
+                                     ),
+                                     column(6,
+                                            plotOutput("rosaVientos")),
+                                     column(12,
+                                            actionButton('plotButton6','Plot all Zones Wind',icon('area-chart')),
+                                            tags$style(type='text/css', "#plotButton6 { width:50%; margin-left: 25%;}")
+                                            ),
+
+                                     column(12,
+                                             plotOutput("rosaVientosZonas"))
+
+                                      
+                                     
+                                     
+                                     
+                            ) 
+                            
+                            
+                            
+                            
+                          )
+                          
+                          
+                          
+                        )
+    )
+  )
+
+
+
+
+server <- function(input, output, session) {
+  
+  sliderMonth <- reactiveValues()
+  observe({
+    full.date <- as.POSIXct(input$slider1, tz="GMT")
+    sliderMonth$Month <- as.character(monthStart(full.date))
+  })
+  sliderMonth2 <- reactiveValues()
+  observe({
+    full.date <- as.POSIXct(input$slider2, tz="GMT")
+    sliderMonth$Month <- as.character(monthStart(full.date))
+  })
+  
+  dfOriginal <- readxl::read_excel("BBDD_Desvios.xlsx") %>% 
+    select(Date = "Dias", Hour = "1", Volumen = "VOLUMEN DESVIO", PrecioAplicado = "PRECIO APLICADO", SP_SUD = SUD, 
+           `PRECIO +`, `PRECIO -`) %>% 
+    mutate(VolumnAbsoluto = abs(Volumen)) %>% 
+    mutate(Hour = str_replace(Hour, "H", "" ) %>% as.integer(),
+           utcDateTime = as_datetime(Date %>% add(hours(Hour-1))) %>% force_tz("Europe/Rome") ,
+           PrecioAplicado = PrecioAplicado %>% as.numeric() %>% round(3),
+           Spread = if_else(Volumen >= 0, abs(PrecioAplicado - SP_SUD), -abs(PrecioAplicado - SP_SUD))) %>% 
+    select(-Date) %>%
+    select(utcDateTime, everything()) %>%
+    arrange(utcDateTime) %>% 
+    mutate(PrecioMas = `PRECIO +` %>% as.double(), 
+           PrecioMenos = `PRECIO -` %>% as.double(),
+           PrecioAplicado = if_else(sign(Volumen) > 0, PrecioAplicado, -PrecioAplicado),
+           # Signo = sign(Volumen),
+           SignoFct = ifelse(sign(Volumen) > 0, "+", "-") %>% as.factor()) %>% 
+    select(-`PRECIO +`, -`PRECIO -`) %>%  
+    na.omit()
+  trainSetBk <- readRDS("trainSetBk.RDS") %>% select(-Hora)
+  windData <- readRDS("allWinds.RDS")
+  df <- dfOriginal %>%
+    left_join(trainSetBk) %>%
+    mutate(Hora=as.factor(Hour)) %>% 
+    select(-Hour) %>% 
+    na.omit() %>% 
+    mutate(TipoHora = as.factor(if_else(PVP_SUD==0,"Eolica","Fotovoltaica")),
+           TipoDia = if_else(wday(utcDateTime,week_start = 1)>=6,"WeekEnd", "WeekDay") %>% as.factor()) %>% 
+    rename(DateTime = utcDateTime,
+           RL_IT=RL) %>% 
+    mutate(WPP_AGG = WPP_ITCSUD+WPP_ITNORD+WPP_ITSARD+WPP_ITSICI+WPP_ITSUD,
+           CE_AGG = CE_ITCSUD+CE_ITNORD+CE_ITSARD+CE_ITSICI+CE_ITSUD,
+           RL_AGG =  RL_SUD + RL_CSUD) %>% 
+    left_join(windData) %>% 
+    select(-Signo)
+  levels(df$Dia) <- c("Lunes","Martes","Miercoles","Jueves","Viernes","Sabado","Domingo")
+  # select(-DateTime) %>%
+  # select(-contains("sd3"), -contains("mean3")) %>%
+  # select(-contains("sd"), -contains("mean")) 
+  
+  
+  # PARTE 1
+  observeEvent(input$plotButton1,{
+    variableEstudiada <- input$variablePanel1
+    fechaImputFormateada <- as_datetime(input$slider0)
+    mesesSeleccionados <- c(meses[month(fechaImputFormateada[1])],meses[month(fechaImputFormateada[2])])
+    anosSeleccionados <-  c(year(fechaImputFormateada[1]),year(fechaImputFormateada[2]))
+    # output$tituloViendoDesde1 <- renderUI(HTML(paste0( "<h3>Viendo datos desde ", mesesSeleccionados[1], " de ", anosSeleccionados[1],
+    #                                                    " hasta ",mesesSeleccionados[2]," de ", anosSeleccionados[2],"</h3>"))) 
+    df0plot <- df %>% select(-contains("Winds")) %>%  filter(between(DateTime,fechaImputFormateada[1],fechaImputFormateada[2]))
+    
+    if(variableEstudiada=="PrecioMenos"){
+      df1 <- df0plot %>% 
+        filter(PrecioMenos > input$extremePrice) %>% 
+        group_by(Hour = as.character(hour(DateTime) %>% add(1))) %>% 
+        summarise(Count = n()) %>%
+        mutate(Type = "Todos") %>% 
+        # right_join(expand.grid(Hour=as.factor(1:24)), by=c("Hour")) %>% 
+        arrange(Hour)
+      
+      df2 <- df0plot %>% 
+        filter(PrecioAplicado < -input$extremePrice) %>% 
+        group_by(Hour = as.character(hour(DateTime) %>% add(1))) %>% 
+        summarise(Count = n()) %>% 
+        mutate(Type = "Aplicado") %>% 
+        # right_join(expand.grid(Hour=as.factor(1:24)), by=c("Hour")) %>% 
+        arrange(Hour)
+      # ratio <- tibble(Hour = 1:24 %>% as.factor(), Ratio = df2$Count / df1$Count * 100)
+      df3 <- bind_rows(df1,df2) %>% 
+        right_join(expand.grid(Hour=as.character(1:24), Type=c("Todos","Aplicado")), by=c("Hour","Type")) %>% # %>% left_join(ratio, by = "Hour") 
+        replace_na(list(Count=0)) %>%
+        mutate(Hour=as.numeric(Hour), Count=as.integer(Count)) %>%
+        arrange(Hour) #%>%
+      #mutate(Hour=as.factor(Hour))
+      
+      output$preciosExtrem <- renderPlot({
+        ggplot(df3, aes(x = as.factor(Hour), y = Count, fill = Type)) +
+          # geom_text(aes(x = Hour,y = -5, label = paste0(round(Ratio,0), "%"), size = Ratio), show.legend = F) +
+          geom_bar(stat = "identity", position = "dodge") +
+          labs(title = paste0("Numero de precios - extremos > ",input$extremePrice, " por hora"), x="Hour")
+      },height = 600)
+    } else if (variableEstudiada=="Spread"){
+      df4 <- df0plot %>% 
+        filter(Spread < -input$extremePrice) %>% 
+        group_by(Hour = as.character(hour(DateTime) %>% add(1))) %>% 
+        summarise(Count = n()) %>% 
+        right_join(expand.grid(Hour=as.character(1:24)), by=c("Hour")) %>% 
+        replace_na(list(Count=0)) %>% 
+        mutate(Hour=as.numeric(Hour), Count=as.integer(Count)) %>%
+        arrange(Hour) 
+      
+      output$preciosExtrem <- renderPlot({
+        ggplot(df4, aes(x = as.factor(Hour), y = Count, fill=1)) +
+          # geom_text(aes(x = Hour,y = -5, label = paste0(round(Ratio,0), "%"), size = Ratio), show.legend = F) +
+          geom_bar(stat = "identity", position = "dodge") +
+          labs(title = paste0("Numero de precios - extremos > ",input$extremePrice, " por hora"), x="Hour")
+      },height = 600)
+    }
+    
+    
+  })
+  
+  # PARTE 2
+  observeEvent(input$plotButton2,{
+    fechaImputFormateada <- as_datetime(input$slider1)
+    mesesSeleccionados <- c(meses[month(fechaImputFormateada[1])],meses[month(fechaImputFormateada[2])])
+    anosSeleccionados <-  c(year(fechaImputFormateada[1]),year(fechaImputFormateada[2]))
+    output$tituloViendoDesde1 <- renderUI(HTML(paste0( "<h3>Viendo datos desde ", mesesSeleccionados[1], " de ", anosSeleccionados[1],
+                                                       " hasta ",mesesSeleccionados[2]," de ", anosSeleccionados[2],"</h3>")))
+    # trainSetBk <- read_rds("trainSetBk.RDS") %>% filter(between(dateTime,as_datetime(input$slider1[1], tz="Europe/Rome"),as_datetime(input$slider1[2], tz="UTC")))
+    df1plot <- df %>% select(-contains("Wind")) %>% 
+      filter(between(DateTime,as_datetime(input$slider1[1], tz="Europe/Rome"),as_datetime(input$slider1[2], tz="Europe/Rome")))
+    
+    
+    # porDiaHoraVol <- trainSetBk %>% group_by(Dia,Hora) %>% summarise(Media=mean(Volumen))
+    porDiaHoraVol <- df1plot %>% 
+      group_by(Dia,Hora) %>% summarise(Media=mean(Volumen))
+    output$volumenDiaHora <- renderPlot({ 
+      grafica1 <- ggplot(porDiaHoraVol, aes(Hora,Media,col =Dia, group=1)) + geom_point(size=4) + 
+        facet_grid(aes(Dia)) + geom_hline(yintercept = 0,col="orange")
+      # ggplotly(grafica1, tooltip = c("Error","Forecast"))
+      grafica1
+    })
+    porHoraSem<- df1plot %>% mutate(Dia=as.numeric(Dia)) %>%  filter(Dia<6) %>%  group_by(Hora) %>% summarise(Media=mean(Volumen))
+    output$volumenHora1 <- renderPlot({ 
+      grafica2 <- ggplot(porHoraSem, aes(Hora,Media, group=1)) + geom_point(size=4) + 
+        labs(title = "Volumen medio segun la hora del dia SEMANA") + geom_hline(yintercept = 0,col="orange")
+      # ggplotly(grafica2, tooltip = c("Error","Forecast"))
+      grafica2
+    })
+    porHoraFinSem<- df1plot %>% mutate(Dia=as.numeric(Dia)) %>% filter(Dia>=6) %>%  group_by(Hora) %>% summarise(Media=mean(Volumen))
+    output$volumenHora2 <- renderPlot({ 
+      grafica2 <- ggplot(porHoraFinSem, aes(Hora,Media, group=1)) + geom_point(size=4) + 
+        labs(title = "Volumen medio segun la hora del dia FIN DE SEMANA") + geom_hline(yintercept = 0,col="orange")
+      # ggplotly(grafica2, tooltip = c("Error","Forecast"))
+      grafica2
+    })
+    
+    
+    porHoraSemFreq <- df1plot  %>% mutate(Dia=as.numeric(Dia)) %>%  filter(Dia<6) %>%  group_by(Hora) %>% summarise(Media=sum(if_else(SignoFct=="-",1,0)))
+    output$volumenHoraFreq1 <- renderPlot({
+      grafica2 <- ggplot(porHoraSemFreq, aes(Hora,Media, group=1)) + geom_point(size=4) +
+        labs(title = "Recuento Signos Negativos segun la hora del dia SEMANA") + geom_hline(yintercept = 0,col="orange")
+      # ggplotly(grafica2, tooltip = c("Error","Forecast"))
+      grafica2
+    })
+    
+    porHoraFinSemFreq <- df1plot  %>% mutate(Dia=as.numeric(Dia)) %>%  filter(Dia>=6) %>%  group_by(Hora) %>% summarise(Media=sum(if_else(SignoFct=="-",1,0)))
+    output$volumenHoraFreq2 <- renderPlot({
+      grafica2 <- ggplot(porHoraFinSemFreq, aes(Hora,Media, group=1)) + geom_point(size=4) +
+        labs(title = "Recuento Signos Negativos segun la hora del dia FIN DE SEMANA") + geom_hline(yintercept = 0,col="orange")
+      # ggplotly(grafica2, tooltip = c("Error","Forecast"))
+      grafica2
+      
+      
+    })
+    
+    
+    
+  })
+  
+  
+  
+  
+  
+  # PARTE 3
+  
+  df3plot <- df
+  
+  updateSelectizeInput(session, "VariableX3",
+                       choices = as.vector(df3plot %>% select_if(~!is.factor(.)) %>%  names())[-1], server = TRUE,selected = "Volumen")
+  updateSelectizeInput(session, "VariableY3",
+                       choices = c("Ninguna",as.vector(df3plot %>% select_if(~!is.factor(.)) %>%  names())[-1]), server = TRUE,selected = "PrecioAplicado")
+  
+  output$tituloViendoDesde3 <- renderUI(HTML("<h4>Selecciona las variables y haz click en Plot</h4>"))
+  
+  
+  
+  observeEvent(input$plotButton3, {
+    fechaImputFormateada <- as_datetime(input$slider3)
+    mesesSeleccionados <- c(meses[month(fechaImputFormateada[1])],meses[month(fechaImputFormateada[2])])
+    anosSeleccionados <-  c(year(fechaImputFormateada[1]),year(fechaImputFormateada[2]))
+    output$tituloViendoDesde3 <- renderUI(HTML(paste0( "<h4>Viendo datos desde ", mesesSeleccionados[1], " de ", anosSeleccionados[1],
+                                                       " hasta ",mesesSeleccionados[2]," de ", anosSeleccionados[2],"</h4>")))
+    binWidth <- input$sliderBins
+    
+    varColor <- input$VariableColor3
+    if(isolate(input$VariableDivisora3) == "Ninguna"){
+      if(input$VariableY3=="Ninguna"){
+        df3plot <- df %>% 
+          filter(between(DateTime,fechaImputFormateada[1],fechaImputFormateada[2])) %>% 
+          select("VarX"=starts_with(input$VariableX3), "Color" = starts_with(varColor), DateTime) %>% fill(VarX)
+      } else {
+        df3plot <- df %>% 
+          filter(between(DateTime,fechaImputFormateada[1],fechaImputFormateada[2])) %>% 
+          select("VarX"=starts_with(input$VariableX3),"VarY"=starts_with(input$VariableY3), "Color" = starts_with(varColor), DateTime) %>% fill(VarX,VarY)
+      }
+      # plot(df2plot$VarX,df2plot$VarY)
+      if(varColor=="Ninguna") {df3plot <- df3plot %>% mutate(Color = 1)}
+      plot3 <- ggplot(df3plot) 
+      
+      if(input$tipoGrafico3=="Densidad"){ plot3 <-  plot3 + geom_density(aes(x = VarX, fill = Color), alpha = .5) }
+      else if(input$tipoGrafico3=="Histograma") { plot3 <-  plot3 + geom_histogram(aes(x=VarX, fill=Color),position = "dodge",binwidth = binWidth) }
+      else if(input$tipoGrafico3=="Temporal") { 
+        if(input$agrupacionTemporal3=="Diaria"){
+          df3plot <- df3plot %>% group_by(DateTime=as.Date(DateTime)) %>% summarise_at(vars(contains("Var")),mean) %>% select(contains("Var"),everything())
+        } else if (input$agrupacionTemporal3=="Mensual"){
+          df3plot <- df3plot %>% mutate(DateTime = floor_date(as_date(DateTime), "month")) %>%group_by(DateTime) %>% summarise_at(vars(contains("Var")),mean) %>% select(contains("Var"),everything())
+        } else if (input$agrupacionTemporal3=="Quarter"){
+          df3plot <- df3plot %>% mutate(DateTime = floor_date(as_date(DateTime), "quarter")) %>%group_by(DateTime) %>% summarise_at(vars(contains("Var")),mean) %>% select(contains("Var"),everything())
+        }
+        
+        df3plot <- df3plot %>% mutate(Color = 1)
+        plot3 <- ggplot(df3plot, aes(x=VarX)) 
+        plot3 <-  plot3 + geom_line(aes(x=DateTime, y=VarX, col=Color))
+        
+        if(input$VariableY3!="Ninguna") {
+          labelX <- input$VariableX3
+          labelY <- input$VariableY3
+          ratioScala <- mean(abs(df3plot$VarY))/mean(abs(df3plot$VarX))
+          df3plot <- df3plot %>% mutate(VarY = VarY/ratioScala)
+          names(df3plot)[1:2] <- c(labelX,labelY)
+          df3plot <- df3plot %>% gather("Key","Value",-DateTime,-Color)
+          plot3 <- ggplot(df3plot, aes(x=DateTime,y=Value,col=Key)) + geom_line() +
+            scale_y_continuous(sec.axis = sec_axis(~.*ratioScala, name = labelY)) 
+        }
+      }
+      
+      
+      # if(input$puntoLinea=="Puntos") plot3 <- plot3 + geom_density(aes(x = VarX, fill = Color), alpha = .5) 
+      # else{plot3 <- plot3 + geom_line() }
+      output$graficoDensidad <-   renderPlot({plot3}, height = 500)
+      
+    } else {
+      df3plot2 <- df %>%
+        filter(between(DateTime,fechaImputFormateada[1],fechaImputFormateada[2])) %>% 
+        select("VarX"=starts_with(input$VariableX3),
+               "Color" = starts_with(varColor),
+               DateTime) 
+      df3plot <- df %>% filter(between(DateTime,fechaImputFormateada[1],fechaImputFormateada[2])) %>% 
+        select("VarX"=starts_with(input$VariableX3),
+               "Div"=starts_with(input$VariableDivisora3), DateTime) %>% right_join(df3plot2,by=c("DateTime","VarX")) %>% fill(VarX)
+      # "Div"=contains("Dia"))
+      if(varColor=="Ninguna") {df3plot <- df3plot %>% mutate(Color = 1)}
+      
+      
+      plot3 <- ggplot(df3plot, aes(x=VarX)) + facet_wrap(as.formula(paste("~", "Div"))) 
+      # if(input$puntoLinea3=="Puntos") plot3 <- plot3 + geom_density(aes(x = VarX, fill = Color), alpha = .5)
+      # else{
+      #   plot2 <- plot2 + geom_line() }
+      if(input$tipoGrafico3=="Densidad"){ plot3 <-  plot3 + geom_density(aes(x = VarX, fill = Color), alpha = .5) }
+      else if(input$tipoGrafico3=="Histograma") { plot3 <-  plot3 + geom_histogram(aes(x=VarX, fill=Color),position = "dodge") }
+      else if(input$tipoGrafico3=="Temporal") { 
+        if(input$agrupacionTemporal3=="Diaria"){
+          df3plot <- df3plot %>% group_by(DateTime=as.Date(DateTime)) %>% summarise_at(vars(contains("Var")),mean) %>% select(contains("Var"),everything())
+        } else if (input$agrupacionTemporal3=="Mensual"){
+          df3plot <- df3plot %>% mutate(DateTime = floor_date(as_date(DateTime), "month")) %>%group_by(DateTime) %>% summarise_at(vars(contains("Var")),mean) %>% select(contains("Var"),everything())
+        } else if (input$agrupacionTemporal3=="Quarter"){
+          df3plot <- df3plot %>% mutate(DateTime = floor_date(as_date(DateTime), "quarter")) %>%group_by(DateTime) %>% summarise_at(vars(contains("Var")),mean) %>% select(contains("Var"),everything())
+        }
+        
+        df3plot <- df3plot %>% mutate(Color = 1)
+        plot3 <- ggplot(df3plot, aes(x=VarX)) 
+        plot3 <-  plot3 + geom_line(aes(x=DateTime, y=VarX, col=Color))
+        
+        if(input$VariableY3!="") {
+          labelX <- input$VariableX3
+          labelY <- input$VariableY3
+          ratioScala <- mean(abs(df3plot$VarY))/mean(abs(df3plot$VarX))
+          df3plot <- df3plot %>% mutate(VarY = VarY/ratioScala)
+          names(df3plot)[1:2] <- c(labelX,labelY)
+          df3plot <- df3plot %>% gather("Key","Value",-DateTime,-Color)
+          plot3 <- ggplot(df3plot, aes(x=DateTime,y=Value,col=Key)) + geom_line() +
+            scale_y_continuous(sec.axis = sec_axis(~.*ratioScala, name = labelY)) 
+        }
+      }
+      
+      
+      output$graficoDensidad <-   renderPlot({plot3 }, height = 600) #+ labs(x = input$VariableX3)
+    }
+  })
+  
+  
+  
+  
+  # PARTE 4
+  df2plot <- df 
+  
+  updateSelectizeInput(session, "VariableX",
+                       choices = as.vector(df2plot  %>% select_if(~!is.factor(.))  %>% names())[-1], server = TRUE,selected = "CE_AGG")
+  updateSelectizeInput(session, "VariableY",
+                       choices = as.vector(df2plot  %>% select_if(~!is.factor(.)) %>% names())[-1], server = TRUE,selected = "SP_IT")
+  
+  
+  output$tituloViendoDesde2 <- renderUI(HTML("<h4>Selecciona las variables y haz click en Plot</h4>"))
+  
+  observeEvent(input$plotButton,{
+    fechaImputFormateada <- as_datetime(input$slider2)
+    mesesSeleccionados <- c(meses[month(fechaImputFormateada[1])],meses[month(fechaImputFormateada[2])])
+    anosSeleccionados <-  c(year(fechaImputFormateada[1]),year(fechaImputFormateada[2]))
+    output$tituloViendoDesde2 <- renderUI(HTML(paste0( "<h4>Viendo datos desde ", mesesSeleccionados[1], " de ", anosSeleccionados[1],
+                                                       " hasta ",mesesSeleccionados[2]," de ", anosSeleccionados[2],"</h4>")))
+    varColor <- input$VariableColor
+    
+    if(input$VariableDivisora == "Ninguna"){
+      df2plot <- df %>% 
+        filter(between(DateTime,as_datetime(input$slider2[1], tz="Europe/Rome"),as_datetime(input$slider2[2], tz="UTC"))) %>% 
+        select("VarX"=starts_with(input$VariableX),"VarY"=starts_with(input$VariableY), "Color" = starts_with(varColor)) 
+      # plot(df2plot$VarX,df2plot$VarY)
+      if(varColor=="Ninguna") {df2plot <- df2plot %>% mutate(Color = 1)}
+      plot2 <- ggplot(df2plot, aes(x=VarX, y=VarY, col=Color)) + geom_point() 
+      
+      # if(input$puntoLinea=="Puntos") plot2 <- plot2 + geom_point() 
+      # else{plot2 <- plot2 + geom_line() }
+      output$scatterPlot <-   renderPlot({plot2}, height = 500)#+ labs(x = input$VariableX, y = input$VariableY)
+      
+    } else {
+      df2plot2 <- df %>%
+        filter(between(DateTime,as_datetime(input$slider2[1], tz="Europe/Rome"),as_datetime(input$slider2[2], tz="UTC"))) %>% 
+        select("VarX"=starts_with(input$VariableX),
+               "VarY"=starts_with(input$VariableY), 
+               "Color" = starts_with(varColor),
+               DateTime) 
+      df2plot <- df %>% select("VarX"=starts_with(input$VariableX),
+                               "VarY"=starts_with(input$VariableY), 
+                               "Div"=starts_with(input$VariableDivisora),
+                               DateTime) %>% right_join(df2plot2, by=c("DateTime","VarX", "VarY"))
+      # "Div"=contains("Dia"))
+      if(varColor=="Ninguna") {df2plot <- df2plot %>% mutate(Color = 1)}
+      
+      plot2 <- ggplot(df2plot, aes(x=VarX, y=VarY, col=Color)) + facet_wrap(as.formula(paste("~", "Div"))) + geom_point() 
+      # if(input$puntoLinea=="Puntos") plot2 <- plot2 + geom_point() 
+      # else{
+      #   plot2 <- plot2 + geom_line() }
+      
+      output$scatterPlot <-   renderPlot({plot2 }, height = 600) #+ labs(x = input$VariableX, y = input$VariableY)
+    }
+    
+    
+  })
+  
+  #Parte 5
+  
+  dfplot <- df
+  
+  output$tituloViendoDesde5 <- renderUI(HTML("<h4>Selecciona las variables y haz click en Plot</h4>"))
+  
+  observeEvent(input$plotButton5,{
+    planta <- input$planta5
+    datosDesvios <- readRDS("devData.RSD") %>% unique() %>% 
+      filter(Plant == input$planta5 ) %>% 
+      filter(between(utcDateTime,as_datetime(input$slider5[1], tz="Europe/Rome"),as_datetime(input$slider5[2], tz="UTC"))) %>% 
+      mutate(Hora = hour(utcDateTime) %>%
+               add(1) %>%
+               as.factor()) %>% 
+      ggplot(aes(x = Hora, y = Diff)) +
+      geom_boxplot()+
+      geom_hline(yintercept = 0, color = "red")+
+      stat_summary(fun.y = mean, color = "darkred", geom = "point", shape = 18)+
+      ggtitle(paste0(planta, "_Error Forecast - Medida"))
+      
+    output$boxPlotDesvios <- renderPlot({ datosDesvios }, height = 700)
+    
+  
+    })
+  
+  #Parte 6
+  
+  dfplot <- df
+  
+  output$tituloViendoDesde6 <- renderUI(HTML("<h4>Selecciona las variables y haz click en Plot</h4>"))
+  windNodes <- readRDS("windNodes.RDS")
+  winds <- read_rds("winds.RDS")
+  winds2 <- winds %>% map(~ split(.x, f = .$Node))
+  
+  # winds2 %>% purrr:::map(~ .x %>% 
+  #                          purrr::map2(.y = names(.),
+  #                                      ~WindRose(spd = .$Module, dir = .$Direction, Id = .y, savePlot = T))
+  # )
+  
+  # observeEvent(input$plotButton6,{
+    output$mapaPlantas <- renderLeaflet({
+      leaflet() %>% 
+        addTiles() %>%
+        addCircleMarkers(data = windNodes$ITSUD,lng=~Longitude, lat=~Latitude,  layerId =  ~Id,
+                         label = windNodes$ITSUD$Id, color = "red",
+                         labelOptions = labelOptions(noHide = T, direction = "right", 
+                                                     style = list(
+                                                       "color" = "red",
+                                                       "font-family" = "serif",
+                                                       "box-shadow" = "1px 1px rgba(0,0,0,0.25)",
+                                                       "font-size" = "12px",
+                                                       "border-color" = "rgba(0,0,0,0.5)"
+                                                     )
+                         )) %>% 
+        addCircleMarkers(data=windNodes$ITCSUD ,lng=~Longitude, lat=~Latitude, layerId = ~Id,
+                         label = windNodes$ITCSUD$Id, color = "blue",
+                         labelOptions = labelOptions(noHide = T, direction = "left",
+                                                     style = list(
+                                                       "color" = "blue",
+                                                       "font-family" = "serif",
+                                                       "box-shadow" = "1px 1px rgba(0,0,0,0.25)",
+                                                       "font-size" = "12px",
+                                                       "border-color" = "rgba(0,0,0,0.5)"
+                                                     ))) %>%
+        addCircleMarkers(data=windNodes$ITSICI, lng=~Longitude, lat=~Latitude, layerId = ~Id,
+                         label = windNodes$ITSICI$Id, color = "green",
+                         labelOptions = labelOptions(noHide = T, direction = "bottom",
+                                                     style = list(
+                                                       "color" = "green",
+                                                       "font-family" = "serif",
+                                                       "box-shadow" = "1px 1px rgba(0,0,0,0.25)",
+                                                       "font-size" = "12px",
+                                                       "border-color" = "rgba(0,0,0,0.5)"
+                                                     )))
+      
+
+      
+      
+    })
+
+    
+    
+  # })
+  
+  observeEvent(input$plotButton6,{
+    output$rosaVientosZonas <- renderPlot({
+      multiplot(
+        WindRose(spd = winds$ITCSUD$Module, dir = winds$ITCSUD$Direction, Id = "ITCSUD"),
+        WindRose(spd = winds$ITSUD$Module, dir = winds$ITSUD$Direction, Id = "ITSUD"),
+        WindRose(spd = winds$ITSICI$Module, dir = winds$ITSICI$Direction, Id = "ITSICI")
+      )
+    })
+    
+  })
+  
+  observeEvent(input$mapaPlantas_marker_click, {
+    click <- input$mapaPlantas_marker_click
+    market <- if_else(startsWith(click$id,"EOLITSUD"),"ITSUD",if_else(startsWith(click$id,"EOLITCSUD"),"ITCSUD","ITSICI"))
+    output$rosaVientos <- renderPlot({
+      WindRose(spd = winds2[[market]][[click$id]]$Module, dir = winds2[[market]][[click$id]]$Direction, Id = click$id)
+      
+    })
+ 
+  })
+  
+  
+  # 
+  # ######### 2. ENSEMBLE MODELS   ######### 
+  # top3forecasters <- map_dbl(forecastersWMAE %>% select(-c(1:2)),mean) %>% sort() %>% head(3)
+  # top3forecastersErrors <- forecastersWMAE %>% select(inicioSemana, top3forecasters %>% names())
+  # top3forecastersErrors$inicioSemana <-  as.Date(top3forecastersErrors$inicioSemana)+1
+  # top3forecastersPlot <- melt(top3forecastersErrors, id.vars = "inicioSemana")
+  # #ggplot(top3forecastersPlot) + geom_line(aes(x = inicioSemana,y = value, col=variable))
+  # 
+  # top3ensembles <- map_dbl(ensemblesWMAE %>% select(-c(1:2)),mean) %>% sort() %>% head(3) 
+  # top3ensemblesErrors <- ensemblesWMAE %>% select(inicioSemana, top3ensembles %>% names())
+  # top3ensemblesErrors$inicioSemana <-  as.Date(top3ensemblesErrors$inicioSemana)+1
+  # top3ensemblesPlot <- melt(top3ensemblesErrors, id.vars = "inicioSemana")
+  # #ggplot(top3ensemblesPlot,aes(x = inicioSemana,y = value, col=variable)) + geom_line() + geom_point()
+  # 
+  # bestForecast <-  top3forecastersErrors %>% select(1:2) %>% melt(., id.vars = "inicioSemana")  
+  
+  output$ensemblesPlot <- renderPlotly({
+    
+    # ggp <- ggplot(top3ensemblesPlot,aes(x = inicioSemana,y = value, colour=variable, group=variable)) + 
+    #   geom_line() +
+    #   geom_point() +
+    #   geom_point(data = bestForecast, aes(x = inicioSemana, y = value, group=variable), col="black") + 
+    #   labs(title = "3 Best Ensemble models vs the best Forecaster (black line)\n", x = "Time", y = "WMAE", color = "Ensemble Models\n") +
+    #   theme_bw() +
+    #   theme(axis.text.x=element_text(size=14),
+    #         axis.text.y=element_text(size=14), axis.title.x=element_text(size=16),
+    #         plot.title=element_text(size=18, face="bold", color="black",hjust = 0.5))
+    # #scale_x_date(labels = date_format("%Y-%m-%d"), date_breaks = "1 week") 
+    # #scale_color_manual(labels = c( "Stack", "StackMeanPro","medianFAKE"), values = c("red", "green", "blue"))
+    # ggplotly(ggp, tooltip = "value")
+    
+  })
+  
+  # ggplot(top3forecastersPlot,aes(x = inicioSemana,y = value, colour=variable, group=variable)) + 
+  #   geom_line() +
+  #   geom_point() +
+  #   geom_point(data = bestEnsemble, aes(x = inicioSemana, y = value, group=variable), col="black") + 
+  #   theme_minimal() +
+  #   labs(title = "3 Best Forecasters (lines) with the best Ensemble (dots)\n", x = "Time", y = "WMAE", color = "Forecasters \n") +
+  #   theme_bw() +
+  #   theme(axis.text.x=element_text(size=14),
+  #         axis.text.y=element_text(size=14), axis.title.x=element_text(size=16),
+  #         plot.title=element_text(size=26, face="bold", color="darkblue",hjust = 0.5)) +
+  #   scale_x_date(labels = date_format("%Y-%m-%d"), date_breaks = "1 week")
+  
+  ###################################################
+  # GRAFICOS DE COMPARACION ENTRE LOS ERRORES DEL MEJOR FORECAST Y EL DEL MEJOR ENSEMBLE.
+  ###################################################
+  # Si la diferencia de error entre Forecast y el Ensemble es POSITIVA significa que el ensemble lo MEJORA.
+  # bestEnsemble <- top3ensemblesErrors %>% select(1:2) %>% melt(., id.vars = "inicioSemana")
+  # compare <- bestForecast  %>% bind_cols(bestEnsemble %>% select(valueE = value)) %>% mutate(ForEnsemDiffError = value - valueE) %>% 
+  #   mutate(mycolor = ifelse(ForEnsemDiffError>0, "pos", "neg"))
+  # 
+  # weekErrorCompare <- compare %>% select(inicioSemana,y = ForEnsemDiffError,mycolor) 
+  
+  output$compareError <- renderPlotly({
+    # # GRAFICO DE LA DIFERENCIA DE ERRORES POR SEMANAS (2 SEMANAS GANA EL FORECASTER)
+    # ggpcompareError <- ggplot(weekErrorCompare, aes(x=inicioSemana, y=y)) +
+    #   geom_segment( aes(x=inicioSemana, xend=inicioSemana, y=0, yend=y, color=mycolor), size=1.3, alpha=0.7) +
+    #   theme_light() +
+    #   theme(
+    #     legend.position = "right",
+    #     panel.border = element_blank()
+    #   ) +
+    #   xlab("") +
+    #   ylab("Value of Y")
+    # 
+    # ggplotly(ggpcompareError)
+  })
+  
+  output$marquesina <- renderText({
+    
+    
+    paste0("<MARQUEE> ", "| GNARUM - GRUPO GNERA | rd@gnarum.es",  " </MARQUEE>")
+    
+    
+  })
+  
+  
+  
+}
+
+
+shinyApp(ui, server)

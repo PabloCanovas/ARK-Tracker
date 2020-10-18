@@ -1,0 +1,181 @@
+---
+title: "Penguins"
+output: 
+  flexdashboard::flex_dashboard:
+  orientation: rows
+social: [ "twitter"]
+source_code: https://github.com/SamanthaToet/intro-to-flexdashboard
+date: "2020-10-18"
+runtime: shiny
+---
+
+<style>
+.navbar {
+background-color: #15dcb2ff;
+border-color: #15dcb2ff
+}
+
+.navbar-inverse .navbar-nav > li > a:hover,
+.navbar-inverse .navbar-nav > li > a:focus {
+background-color: #c35dca;
+color: white;
+}
+.navbar-inverse .navbar-nav > .active > a,
+.navbar-inverse .navbar-nav > .active > a:hover,
+.navbar-inverse .navbar-nav > .active > a:focus {
+color: white;
+background-color: #c35dca;
+}
+.navbar-inverse .navbar-toggle:hover,
+.navbar-inverse .navbar-toggle:focus {
+background-color: #c35dca;
+}
+.navbar-inverse .navbar-collapse,
+.navbar-inverse .navbar-form {
+border-color: #c35dca;
+}
+</style>
+
+
+
+Analysis
+=====================================   
+
+Row
+-------------------------------------
+
+### Penguins measured
+
+
+```r
+n_penguins <- nrow(penguins)
+valueBox(n_penguins, icon = "fa-pencil", color = "#fa7404")
+```
+
+<!--html_preserve--><span class="value-output" data-icon="fa-pencil" data-color="#fa7404">344</span><!--/html_preserve-->
+
+### Average culmen length
+
+
+```r
+cul_length <- paste0(round(mean(penguins$bill_length_mm, 
+                                na.rm = TRUE)), " mm")
+valueBox(cul_length, 
+         icon = "fa-ruler", color = "#fa7404")
+```
+
+<!--html_preserve--><span class="value-output" data-icon="fa-ruler" data-color="#fa7404">44 mm</span><!--/html_preserve-->
+
+### Average body mass
+
+
+```r
+mass <- round(mean(penguins$body_mass_g, na.rm = TRUE))
+gauge(mass, min = min(penguins$body_mass_g, na.rm = TRUE), 
+      max = max(penguins$body_mass_g, na.rm = TRUE), 
+      symbol = 'g', 
+      gaugeSectors(
+        success = c(6000, 6300), 
+        warning = c(3000, 5999), 
+        danger = c(2700, 2999)),
+      abbreviate = FALSE
+)
+```
+
+```
+## PhantomJS not found. You can install it with webshot::install_phantomjs(). If it is installed, please make sure the phantomjs executable can be found via the PATH variable.
+```
+
+```
+## Warning in normalizePath(path.expand(path), winslash, mustWork):
+## path[1]="webshot3394602f29e4.png": El sistema no puede encontrar el archivo
+## especificado
+```
+
+```
+## Warning in file(con, "rb"): no fue posible abrir el archivo 'C:
+## \Users\Pablo\AppData\Local\Temp\RtmpmMRN6m\file33942915426a\webshot3394602f29e4.png':
+## No such file or directory
+```
+
+```
+## Error in file(con, "rb"): no se puede abrir la conexión
+```
+
+Row
+-------------------------------------
+
+### Culmen Length vs. Body Mass
+
+
+```
+## Warning: Removed 2 rows containing missing values (geom_point).
+```
+
+![plot of chunk plot](figure/plot-1.png)
+
+### What are we measuring?
+
+
+```r
+knitr::include_graphics("culmen_depth.png")
+```
+
+![plot of chunk image](culmen_depth.png)
+
+Raw Data
+=====================================   
+
+Row
+-------------------------------------
+
+### Data Table of Raw Data
+
+
+```r
+DT::datatable(penguins, options = list(
+  pageLength = 25, 
+  height = "600px"
+))
+```
+
+```
+## PhantomJS not found. You can install it with webshot::install_phantomjs(). If it is installed, please make sure the phantomjs executable can be found via the PATH variable.
+```
+
+```
+## Warning in normalizePath(path.expand(path), winslash, mustWork):
+## path[1]="webshot339471c01.png": El sistema no puede encontrar el archivo
+## especificado
+```
+
+```
+## Warning in file(con, "rb"): no fue posible abrir el archivo 'C:
+## \Users\Pablo\AppData\Local\Temp\RtmpmMRN6m\file339448d74f0e\webshot339471c01.png':
+## No such file or directory
+```
+
+```
+## Error in file(con, "rb"): no se puede abrir la conexión
+```
+
+Row {data-height=100}
+-------------------------------------
+
+
+```r
+fluidRow(
+  downloadHandler(filename = function() { 
+    return("penguins.csv")
+  }, content = function(file) {
+    write.csv(penguins, file)
+  })
+)
+```
+
+<!--html_preserve--><div class="row">
+<a id="out8d72677dfb155f5d" class="btn btn-default shiny-download-link " href="" target="_blank" download>
+<i class="fa fa-download"></i>
+Download
+</a>
+</div><!--/html_preserve-->

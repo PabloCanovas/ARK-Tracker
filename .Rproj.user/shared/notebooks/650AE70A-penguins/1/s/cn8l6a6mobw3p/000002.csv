@@ -1,0 +1,2 @@
+"0","n_penguins <- nrow(penguins)"
+"0","valueBox(n_penguins, icon = ""fa-pencil"", color = ""#fa7404"")"

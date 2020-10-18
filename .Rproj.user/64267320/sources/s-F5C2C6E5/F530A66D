@@ -1,0 +1,26 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1603033111149.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "F530A66D",
+    "lastKnownWriteTime" : 1603039806,
+    "last_content_update" : 1603039806096,
+    "path" : "~/RWork/Investing/ARK/Tools.R",
+    "project_path" : "Tools.R",
+    "properties" : {
+        "cursorPosition" : "73,0",
+        "scrollLine" : "34",
+        "tempName" : "Untitled1"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 5,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
