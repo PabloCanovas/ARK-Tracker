@@ -2,3 +2,4 @@
 Daily_reports/*.csv
 *.Rproj
 .gitattributes
+*.Rproj.user/*
