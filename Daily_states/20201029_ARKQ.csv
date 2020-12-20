@@ -1,0 +1,44 @@
+date,fund,company,ticker,cusip,shares,"market value($)",weight(%)
+10/28/2020,ARKQ,"TESLA INC",TSLA,88160R101,187416.00,76094644.32,10.22
+10/28/2020,ARKQ,"MATERIALISE NV-ADR",MTLS,57667T100,1342856.00,51323956.32,6.90
+10/28/2020,ARKQ,"2U INC",TWOU,90214J101,1209050.00,42280478.50,5.68
+10/28/2020,ARKQ,"XILINX INC",XLNX,983919101,278949.00,33406932.24,4.49
+10/28/2020,ARKQ,"ALPHABET INC-CL C",GOOG,02079K107,21224.00,32188742.88,4.32
+10/28/2020,ARKQ,"DEERE & CO",DE,244199105,124965.00,27913432.05,3.75
+10/28/2020,ARKQ,"JD.COM INC-ADR",JD,47215P106,344329.00,27573866.32,3.70
+10/28/2020,ARKQ,"PROTO LABS INC",PRLB,743713109,228586.00,26861140.86,3.61
+10/28/2020,ARKQ,"BYD CO LTD-UNSPONSORED ADR",BYDDY,05606L100,716955.00,26473563.38,3.56
+10/28/2020,ARKQ,"TRIMBLE INC",TRMB,896239100,520563.00,24924556.44,3.35
+10/28/2020,ARKQ,"KRATOS DEFENSE & SECURITY",KTOS,50077B207,1286972.00,24761341.28,3.33
+10/28/2020,ARKQ,"STRATASYS LTD",SSYS,M85548101,1704221.00,22120788.58,2.97
+10/28/2020,ARKQ,"CATERPILLAR INC",CAT,149123101,143790.00,21735296.40,2.92
+10/28/2020,ARKQ,"IRIDIUM COMMUNICATIONS INC",IRDM,46269C102,746859.00,18929141.36,2.54
+10/28/2020,ARKQ,"SPLUNK INC",SPLK,848637104,88186.00,18141623.92,2.44
+10/28/2020,ARKQ,"KOMATSU LTD -SPONS ADR",KMTUY,500458401,792505.00,18108739.25,2.43
+10/28/2020,ARKQ,"FLIR SYSTEMS INC",FLIR,302445101,525499.00,17877475.98,2.40
+10/28/2020,ARKQ,"TAIWAN SEMICONDUCTOR-SP ADR",TSM,874039100,209391.00,17557435.35,2.36
+10/28/2020,ARKQ,"AEROVIRONMENT INC",AVAV,008073108,234358.00,17583880.74,2.36
+10/28/2020,ARKQ,"NXP SEMICONDUCTORS NV",NXPI,N6596X109,133386.00,17309501.22,2.33
+10/28/2020,ARKQ,"BAIDU INC - SPON ADR",BIDU,056752108,124978.00,16334624.60,2.19
+10/28/2020,ARKQ,"SYNOPSYS INC",SNPS,871607107,71461.00,15565635.02,2.09
+10/28/2020,ARKQ,"WORKHORSE GROUP INC",WKHS,98138J206,848770.00,14216897.50,1.91
+10/28/2020,ARKQ,"TERADYNE INC",TER,880770102,137128.00,11729929.12,1.58
+10/28/2020,ARKQ,"NIU TECHNOLOGIES-SPONS ADR",NIU,65481N100,427274.00,11681671.16,1.57
+10/28/2020,ARKQ,"AMAZON.COM INC",AMZN,023135106,3629.00,11477728.62,1.54
+10/28/2020,ARKQ,"VIRGIN GALACTIC HOLDINGS INC",SPCE,92766K106,650690.00,11374061.20,1.53
+10/28/2020,ARKQ,"EXONE CO/THE",XONE,302104104,1003858.00,10761357.76,1.45
+10/28/2020,ARKQ,"INTUITIVE SURGICAL INC",ISRG,46120E602,14908.00,10253722.40,1.38
+10/28/2020,ARKQ,"TENCENT HOLDINGS LTD-UNS ADR",TCEHY,88032Q109,119507.00,9076556.65,1.22
+10/28/2020,ARKQ,"NVIDIA CORP",NVDA,67066G104,16713.00,8441402.04,1.13
+10/28/2020,ARKQ,"ELBIT SYSTEMS LTD",ESLT,M3760D101,73909.00,8370194.25,1.12
+10/28/2020,ARKQ,"ANSYS INC",ANSS,03662Q105,24693.00,7606184.79,1.02
+10/28/2020,ARKQ,"ROCKWELL AUTOMATION INC",ROK,773903109,32237.00,7543780.37,1.01
+10/28/2020,ARKQ,"APPLE INC",AAPL,037833100,66687.00,7415594.40,1.00
+10/28/2020,ARKQ,"AUTODESK INC",ADSK,052769106,25890.00,6151981.80,0.83
+10/28/2020,ARKQ,"NANO DIMENSION LTD - ADR",NNDM,63008G203,1893633.00,5737707.99,0.77
+10/28/2020,ARKQ,"RAVEN INDUSTRIES INC",RAVN,754212108,156204.00,3370882.32,0.45
+10/28/2020,ARKQ,"MORGAN STANLEY GOVT INSTL 8035",,X9USDMORS,2209972.66,2209972.66,0.30
+10/28/2020,ARKQ,"ORGANOVO HOLDINGS INC","ONVO ",68620A203,198425.00,1877100.50,0.25
+,,,,,,,
+,,,,,,,
+"The principal risks of investing in ARK ETFs include equity, market, management and non-diversification risks, as well as fluctuations in market value and net asset value ('NAV'). Investors should carefully consider the investment objectives and risks as well as charges and expenses of an ETF before investing. This and other information are contained in each ETF's prospectus, which may be obtained by contacting the ETF's transfer agent The Bank of New York Mellon or by clicking here. Please read the prospectus carefully before you invest. The market price of ETF shares may differ significantly from their NAV during periods of market volatility. ETF shares may only be redeemed directly with the ETF at NAV by Authorized Participants, in very large creation units. Holdings are subject to change without notice and are not a recommendation to buy or sell any security. There can be no guarantee that an active trading market for ETF shares will develop or be maintained, or that their listing will continue or remain unchanged. Buying or selling ETF shares on an exchange may require the payment of brokerage commissions and frequent trading may incur brokerage costs that detract significantly from investment returns. Copyright 2020, ARK Investment Management LLC. All content is original and has been researched and produced by ARK Investment Management LLC unless otherwise stated. No part of this content may be reproduced in any form, or referred to in any other publication, without the express written permission of ARK Investment Management LLC. All statements made regarding companies, securities or other financial information on this site or any sites or articles relating to ARK Investment Management LLC are strictly beliefs and points of view held by ARK Investment Management and are subject to change without notice. Information contained herein has been obtained from sources believed to be reliable, but not guaranteed. This material has been distributed for informational purposes only and should not be considered as investment advice or a recommendation of any particular security, strategy or investment product.",,,,,,

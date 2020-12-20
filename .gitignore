@@ -1,5 +1,6 @@
-*.csv
 *.Rproj
+Check*
+Daily_deltas*
 .gitattributes
 .Rproj.user/*
 .Rproj.user

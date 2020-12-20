@@ -1,0 +1,52 @@
+date,fund,company,ticker,cusip,shares,"market value($)",weight(%)
+10/23/2020,ARKF,"SQUARE INC - A",SQ,852234103,583178.00,103088375.06,11.23
+10/23/2020,ARKF,"MERCADOLIBRE INC",MELI,58733R102,35343.00,46375670.88,5.05
+10/23/2020,ARKF,"PINTEREST INC- CLASS A",PINS,72352L106,861826.00,45676778.00,4.98
+10/23/2020,ARKF,"INTERCONTINENTAL EXCHANGE IN",ICE,45866F104,376350.00,37239832.50,4.06
+10/23/2020,ARKF,"LENDINGTREE INC","TREE UW",52603B107,106620.00,36774304.20,4.01
+10/23/2020,ARKF,"TENCENT HOLDINGS LTD-UNS ADR",TCEHY,88032Q109,482069.00,35205499.07,3.84
+10/23/2020,ARKF,"ALIBABA GROUP HOLDING-SP ADR",BABA,01609W102,104400.00,32355648.00,3.53
+10/23/2020,ARKF,"ADYEN NV",ADYEN,BZ1HM42,17074.00,31769679.46,3.46
+10/23/2020,ARKF,"SEA LTD-ADR",SE,81141R100,192701.00,31402554.96,3.42
+10/23/2020,ARKF,"ZILLOW GROUP INC - C",Z,98954M200,321382.00,30904093.12,3.37
+10/23/2020,ARKF,"PAYPAL HOLDINGS INC",PYPL,70450Y103,145396.00,29521203.84,3.22
+10/23/2020,ARKF,"SNAP INC - A",SNAP,83304A106,626336.00,27038925.12,2.95
+10/23/2020,ARKF,"Z HOLDINGS CORP",4689,6084848,3800012.00,26203224.91,2.86
+10/23/2020,ARKF,"MEITUAN DIANPING-CLASS B",3690,BGJW376,769615.00,26057506.21,2.84
+10/23/2020,ARKF,"AMAZON.COM INC",AMZN,023135106,7697.00,24664266.80,2.69
+10/23/2020,ARKF,"TWILIO INC - A",TWLO,90138F102,79321.00,24280158.10,2.65
+10/23/2020,ARKF,"APPLE INC",AAPL,037833100,205253.00,23612305.12,2.57
+10/23/2020,ARKF,"FACEBOOK INC-CLASS A",FB,30303M102,78338.00,22309879.02,2.43
+10/23/2020,ARKF,"ZHONGAN ONLINE P&C INSURAN-H",6060,BYZQ099,4160445.00,21419443.16,2.33
+10/23/2020,ARKF,"SPLUNK INC",SPLK,848637104,90679.00,19632910.29,2.14
+10/23/2020,ARKF,"DOCUSIGN INC",DOCU,256163106,71975.00,15821544.50,1.72
+10/23/2020,ARKF,"INTUIT INC",INTU,461202103,47229.00,15794322.18,1.72
+10/23/2020,ARKF,"WORKDAY INC-CLASS A",WDAY,98138H101,59659.00,13371968.26,1.46
+10/23/2020,ARKF,"SLACK TECHNOLOGIES INC- CL A",WORK,83088V102,439278.00,12633635.28,1.38
+10/23/2020,ARKF,"LIGHTSPEED POS INC-SUB VOTE",LSPD,BGHVW01,356996.00,12234582.97,1.33
+10/23/2020,ARKF,"TAIWAN SEMICONDUCTOR-SP ADR",TSM,874039100,133698.00,11806870.38,1.29
+10/23/2020,ARKF,"GUIDEWIRE SOFTWARE INC",GWRE,40171V100,115133.00,11713631.42,1.28
+10/23/2020,ARKF,"SBI HOLDINGS INC",8473,6309466,450874.00,11256240.26,1.23
+10/23/2020,ARKF,"PINDUODUO INC-ADR",PDD,722304102,124705.00,10838111.55,1.18
+10/23/2020,ARKF,"YEAHKA LTD",9923,BL58D39,1722800.00,10570143.42,1.15
+10/23/2020,ARKF,"HDFC BANK LTD-ADR",HDB,40415F101,173457.00,10469864.52,1.14
+10/23/2020,ARKF,"SCHWAB (CHARLES) CORP",SCHW,808513105,256948.00,10367851.80,1.13
+10/23/2020,ARKF,"NVIDIA CORP",NVDA,67066G104,18308.00,9952411.88,1.08
+10/23/2020,ARKF,"INTERACTIVE BROKERS GRO-CL A",IBKR,45841N107,198909.00,9828093.69,1.07
+10/23/2020,ARKF,"LENDINGCLUB CORP",LC,52603A208,1879598.00,9679929.70,1.05
+10/23/2020,ARKF,"DISCOVERY LTD",DSY,6177878,1225229.00,9495453.83,1.03
+10/23/2020,ARKF,TRANSUNION,TRU,89400J107,101123.00,8701634.15,0.95
+10/23/2020,ARKF,"JD.COM INC-ADR",JD,47215P106,104696.00,8515972.64,0.93
+10/23/2020,ARKF,"VERISK ANALYTICS INC",VRSK,92345Y106,40914.00,7742974.50,0.84
+10/23/2020,ARKF,"TCS GROUP HOLDING-GDR REG S",,87238U203,303247.00,7247603.30,0.79
+10/23/2020,ARKF,"SILVERGATE CAPITAL CORP-CL A",SI,82837P408,267401.00,5532526.69,0.60
+10/23/2020,ARKF,"MARKETAXESS HOLDINGS INC",MKTX,57060D108,8886.00,4966474.26,0.54
+10/23/2020,ARKF,"ZSCALER INC",ZS,98980G102,31674.00,4657661.70,0.51
+10/23/2020,ARKF,"SOCIAL CAPITAL HEDOSOPHIA-A",IPOB,G8250T109,210216.00,4086599.04,0.45
+10/23/2020,ARKF,"MORGAN STANLEY GOVT INSTL 8035",,X9USDMORS,2628824.33,2628824.33,0.29
+10/23/2020,ARKF,"HONG KONG DOLLAR",,CCTHKD,4424596.49,570911.99,0.06
+10/23/2020,ARKF,"HONG KONG DOLLAR",,CCTHKD,2456676.87,316988.52,0.03
+10/23/2020,ARKF,"JAPANESE YEN",,CCTJPY,12858026.00,122802.41,0.01
+,,,,,,,
+,,,,,,,
+"The principal risks of investing in ARK ETFs include equity, market, management and non-diversification risks, as well as fluctuations in market value and net asset value ('NAV'). Investors should carefully consider the investment objectives and risks as well as charges and expenses of an ETF before investing. This and other information are contained in each ETF's prospectus, which may be obtained by contacting the ETF's transfer agent The Bank of New York Mellon or by clicking here. Please read the prospectus carefully before you invest. The market price of ETF shares may differ significantly from their NAV during periods of market volatility. ETF shares may only be redeemed directly with the ETF at NAV by Authorized Participants, in very large creation units. Holdings are subject to change without notice and are not a recommendation to buy or sell any security. There can be no guarantee that an active trading market for ETF shares will develop or be maintained, or that their listing will continue or remain unchanged. Buying or selling ETF shares on an exchange may require the payment of brokerage commissions and frequent trading may incur brokerage costs that detract significantly from investment returns. Copyright 2020, ARK Investment Management LLC. All content is original and has been researched and produced by ARK Investment Management LLC unless otherwise stated. No part of this content may be reproduced in any form, or referred to in any other publication, without the express written permission of ARK Investment Management LLC. All statements made regarding companies, securities or other financial information on this site or any sites or articles relating to ARK Investment Management LLC are strictly beliefs and points of view held by ARK Investment Management and are subject to change without notice. Information contained herein has been obtained from sources believed to be reliable, but not guaranteed. This material has been distributed for informational purposes only and should not be considered as investment advice or a recommendation of any particular security, strategy or investment product.",,,,,,
