@@ -1,10 +1,11 @@
 
+
+setwd("C:/Users/Pablo/Documents/RWork/Investing/ARK/")
+
 library(tidyverse)
 library(lubridate)
 library(glue)
 library(magrittr)
-
-download_data <- TRUE
 
 today <- today() %>% format("%Y%m%d")
 
@@ -21,22 +22,32 @@ urls <- list(
 
 ### Download files ----------------------------------
 
-if(download_data){
-  
-  message("Downloading files...")
-  
-  imap(urls,
-       ~ {
-         download.file(.x, glue("Daily_reports/{today}_{.y}.csv"))
-         Sys.sleep(max(0, 3 + rnorm(1, 5, 5)))
-       })
-}
+message("Downloading files...\n ")
+
+imap(urls,
+     ~ {
+       download.file(.x, glue("Daily_states/{today}_{.y}.csv"))
+       Sys.sleep(max(0, 3 + rnorm(1, 5, 5)))
+     })
+
+
+
+
+# Check files have been downloaded and, if not, send email to notify.
+
+
+
+
+
+
+
+
 
 
 
 ### Read funds files ----------------------------------
 
-# file_names <- names(urls) %>% map_chr(~ glue("{today}_{.x}.csv")) %>% paste0("Daily_reports/", .)
+# file_names <- names(urls) %>% map_chr(~ glue("{today}_{.x}.csv")) %>% paste0("Daily_states/", .)
 # 
 # 
 # today_state <- file_names %>%
